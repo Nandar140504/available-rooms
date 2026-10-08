@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Available Rooms</title>
+<style>
+:root{color-scheme:dark;--card:rgba(8,20,52,.62);--line:rgba(255,255,255,.22);--tx:#fff;--mut:#b9c8e8;--ok:#35d49a;--busy:#ff5d6c;--soon:#ffc857;--acc:#6bb6ff}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;overflow:hidden}
+body{color:var(--tx);font-family:'Segoe UI',system-ui,Arial,sans-serif;display:flex;flex-direction:column;gap:1.6vh;padding:calc(2vh + env(safe-area-inset-top,0px)) 2.2vw calc(2vh + env(safe-area-inset-bottom,0px));
+background:linear-gradient(rgba(6,16,45,.72),rgba(6,16,45,.82)),url(bg.jpg) center 42%/cover no-repeat #0a1a3f}
+header{display:grid;grid-template-columns:1fr;justify-items:center;align-items:center;gap:2vw}
+.logo{background:#fff;border-radius:50%;height:12vh;width:12vh;padding:.8vh;object-fit:contain;box-shadow:0 .5vh 2vh rgba(0,0,0,.4)}
+.logo.sig{justify-self:start;border-radius:2vh;width:auto;padding:.8vh 1.4vh}
+.logo.st{justify-self:end}
+.mid{text-align:center}
+.sub{font-size:1.9vh;letter-spacing:.3em;color:#dbe6ff;margin:.3vh 0 .6vh;font-weight:500}
+.loc{position:fixed;left:2.2vw;top:calc(2.6vh + env(safe-area-inset-top,0px));font-size:2.2vh;font-weight:700;letter-spacing:.25em;padding:.8vh 1.2vw;border-left:.5vh solid var(--acc);background:rgba(5,12,34,.6);border-radius:0 1vh 1vh 0}
+.mid h1{font-size:2.4vh;letter-spacing:.22em;font-weight:600;color:var(--mut)}
+#jam{font-size:9vh;font-weight:700;line-height:1.05;text-shadow:0 .4vh 2vh rgba(0,0,0,.5)}
+#jam i{font-style:normal;animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:.25}}
+#tgl{font-size:2.6vh;color:#e6eeff}
+main{flex:1;min-height:0;display:grid;grid-template-columns:repeat(6,1fr);grid-template-rows:1fr 1fr;gap:1.6vh 1.2vw}
+.card{background:var(--card);border:1px solid var(--line);border-radius:2vh;padding:2.2vh 1.6vw;display:flex;flex-direction:column;justify-content:space-between;backdrop-filter:blur(8px);position:relative;overflow:hidden;min-height:0}
+.card{grid-column:span 2}
+.card:nth-child(4){grid-column:2/span 2}
+.card:nth-child(5){grid-column:4/span 2}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:.7vh;background:var(--c)}
+.top{display:flex;justify-content:space-between;align-items:center;gap:1vw}
+.name{font-size:2.6vh;font-weight:700}
+.name small{display:block;font-size:.55em;color:var(--acc);font-weight:600;letter-spacing:.14em;text-transform:uppercase;margin-top:.5vh}
+.name{font-size:2.9vh}
+.badge{font-size:1.7vh;font-weight:700;padding:.6vh 1.2vw;border-radius:99px;color:var(--c);border:1px solid var(--c);background:rgba(0,0,0,.3);white-space:nowrap}
+.badge.busy{animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{50%{box-shadow:0 0 1.6vh var(--c)}}
+.avail{font-size:4.6vh;letter-spacing:.35em;font-weight:300}
+.info{display:grid;gap:.9vh;font-size:2.1vh}
+.info{font-size:2.3vh;gap:1.1vh}
+.info div{display:flex;gap:1vw}
+.info i{font-style:normal;color:var(--mut);min-width:9ch}
+.info b{font-weight:600}
+.time{color:var(--mut);font-size:2vh}
+.ticker{background:rgba(5,12,34,.75);border:1px solid var(--line);border-radius:99px;overflow:hidden;white-space:nowrap;padding:1.3vh 0}
+.track{display:inline-block;padding-left:100%;animation:run var(--dur,60s) linear infinite;font-size:2.7vh;font-weight:600}
+.track em{font-style:normal;color:var(--acc)}
+.track span{margin-right:8vw;letter-spacing:.12em}
+@keyframes run{to{transform:translateX(-100%)}}
+@media (max-width:800px){body{overflow:auto}html,body{height:auto;min-height:100%}main{grid-template-columns:1fr;grid-template-rows:none}.card,.card:nth-child(4),.card:nth-child(5){grid-column:auto}.card{min-height:20vh}#jam{font-size:7vh}.logo{height:9vh;width:9vh}}
+.name small.cap{color:var(--mut);letter-spacing:.05em;text-transform:none;font-size:.5em;font-weight:500;margin-top:.3vh}
+.next{color:var(--soon);font-size:1.7vh;margin-top:.4vh;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#gear{position:fixed;right:1vw;bottom:1vh;opacity:.3;background:none;border:0;color:#fff;font-size:3vh;cursor:pointer;z-index:5}
+#gear:hover{opacity:1}
+#ed{position:fixed;inset:0;background:rgba(4,10,30,.97);overflow:auto;padding:2vh 3vw;display:none;z-index:10;font-size:16px}
+#ed h2{margin:0 0 12px;font-size:22px}
+#ed h3{margin:0;font-size:17px}
+.er{background:rgba(255,255,255,.07);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:12px;display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}
+.er h3{grid-column:1/-1}
+#ed label{display:grid;gap:3px;font-size:13px;color:var(--mut)}
+#ed input,#ed select,#ed textarea{font:inherit;font-size:16px;padding:9px;border-radius:8px;border:1px solid var(--line);background:#0d1b45;color:#fff;width:100%}
+.btn{font:inherit;font-weight:600;padding:11px 18px;border-radius:10px;border:0;cursor:pointer;background:var(--acc);color:#04122f;margin:6px 8px 0 0}
+.btn.g{background:#2b3a66;color:#fff}
+#msg{margin:10px 0;color:var(--soon);min-height:1.2em}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;background:rgba(255,255,255,.07);border:1px solid var(--line);border-radius:10px;padding:10px;margin-bottom:8px;font-size:15px}
+.row .btn{padding:7px 12px;margin:0 0 0 6px}
+.mut{color:var(--mut)}
+</style>
+</head>
+<body>
+<header><div class="mid"><h1>AVAILABLE ROOMS</h1><div class="sub">CORPORATE LEARNING DEVELOPMENT</div><div id="jam">--<i>:</i>--</div><div id="tgl"></div></div></header>
+<main id="grid"></main>
+<div class="ticker"><div class="track" id="track"></div></div>
+<button id="gear" title="Pengaturan jadwal (E)">⚙</button>
+<div id="ed"></div>
+<script>
+const H=["Minggu","Senin","Selasa","Rabu","Kamis","Jumat","Sabtu"];
+const B=["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
+const p2=x=>String(x).padStart(2,"0");
+const mnt=s=>{const a=(s||"").split(":");return +a[0]*60+ +a[1]};
+const esc=s=>String(s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const $=id=>document.getElementById(id);
+const uid=()=>Math.random().toString(36).slice(2,8)+Date.now().toString(36).slice(-4);
+const ymd=d=>d.getFullYear()+"-"+p2(d.getMonth()+1)+"-"+p2(d.getDate());
+const pd=s=>{const a=s.split("-");return new Date(+a[0],+a[1]-1,+a[2])};
+const lbl=s=>{const d=pd(s);return H[d.getDay()]+", "+d.getDate()+" "+B[d.getMonth()].slice(0,3)+" "+d.getFullYear()};
+
+let D={rooms:[{nama:"Education Room",lantai:"Lantai 2",kapasitas:"50/60"},{nama:"Learning Room",lantai:"Lantai 1",kapasitas:"30/40"},{nama:"Knowledge Room",lantai:"Lantai 1",kapasitas:"30/40"},{nama:"Development Room",lantai:"Lantai 1",kapasitas:"20/25"},{nama:"Podcast",lantai:"Lantai 2",kapasitas:"6/10"}],jadwal:[],ticker:"UNIT LEARNING & DEVELOPMENT"};  // cadangan bila server belum bisa dihubungi
+
+/* Status ruangan untuk HARI INI: ON GOING / UPCOMING / AVAILABLE */
+function roomState(n,now){
+  const today=ymd(now),nm=now.getHours()*60+now.getMinutes();
+  const L=D.jadwal.filter(x=>x.ruang===n&&x.tanggal===today&&x.diklat).sort((a,b)=>(a.mulai||"").localeCompare(b.mulai||""));
+  let cur=null,nxt=null;
+  for(const x of L){
+    if(!x.mulai||!x.selesai){if(!cur)cur=x;continue}
+    const s=mnt(x.mulai),e=mnt(x.selesai);
+    if(nm>=s&&nm<e)cur=x;else if(nm<s&&!nxt)nxt=x;
+  }
+  if(cur)return{k:"busy",t:"ON GOING",c:"var(--busy)",it:cur,next:nxt};
+  if(nxt)return{k:"soon",t:"UPCOMING",c:"var(--soon)",it:nxt,next:null};
+  return{k:"free",t:"AVAILABLE",c:"var(--ok)",it:null,next:null};
+}
+function render(){
+  const now=new Date();
+  $("jam").innerHTML=p2(now.getHours())+"<i>:</i>"+p2(now.getMinutes());
+  $("tgl").textContent=H[now.getDay()]+", "+now.getDate()+" "+B[now.getMonth()]+" "+now.getFullYear();
+  let html="";
+  D.rooms.forEach(({nama:n,lantai:l,kapasitas:cap})=>{
+    const s=roomState(n,now),r=s.it,wkt=r&&r.mulai&&r.selesai?`${r.mulai} – ${r.selesai} WITA`:"";
+    html+=`<section class="card" style="--c:${s.c}"><div class="top"><div class="name">${esc(n)}<small>${esc(l)}</small><small class="cap">Kapasitas ${esc(cap)} orang</small></div><div class="badge ${s.k}">${s.t}</div></div>`+
+    (r?`<div class="info"><div><i>Diklat</i><b>${esc(r.diklat)}</b></div><div><i>Instruktur</i><b>${esc(r.instruktur)}</b></div><div><i>Materi</i><b>${esc(r.materi)}</b></div></div><div><div class="time">${wkt}</div>${s.next?`<div class="next">Next: ${esc(s.next.mulai)} – ${esc(s.next.selesai)} · ${esc(s.next.diklat)}</div>`:""}</div>`
+    :`<div class="avail">AVAILABLE</div><div class="time">Silakan digunakan</div>`)+`</section>`;
+  });
+  const g=$("grid");if(g.dataset.h!==html){g.innerHTML=html;g.dataset.h=html}
+  const tk=`<span>${esc(D.ticker)}</span>`.repeat(4),t=$("track");
+  if(t.dataset.h!==tk){t.dataset.h=tk;t.innerHTML=tk;t.style.setProperty("--dur",Math.max(25,t.textContent.length*.28)+"s")}
+}
+async function load(){
+  try{const r=await fetch("/api/data",{cache:"no-store"});if(r.ok){D=await r.json();render()}}catch(e){/* offline: tetap tampilkan data terakhir */}
+}
+render();load();
+setInterval(render,1000);   // jam
+setInterval(load,30000);    // ambil data terbaru tiap 30 detik (hemat kuota)
+
+
+/* ===== Pengaturan jadwal (tombol ⚙ di pojok kanan bawah, atau tekan huruf E) ===== */
+const FIELDS=["diklat","instruktur","materi","mulai","selesai"];
+const ed=$("ed"),gear=$("gear");
+let token=localStorage.getItem("rooms-token")||"",needAuth=null,editId=null;
+
+async function api(path,body){
+  const r=await fetch(path,{method:body?"POST":"GET",headers:{"Content-Type":"application/json",...(token&&body?{Authorization:"Bearer "+token}:{})},body:body?JSON.stringify(body):undefined});
+  if(r.status===401){token="";localStorage.removeItem("rooms-token");showLogin()}
+  return r;
+}
+async function openEd(){
+  if(ed.style.display==="block")return;
+  ed.style.display="block";
+  if(needAuth===null){try{needAuth=(await (await fetch("/api/config")).json()).auth}catch(e){needAuth=false}}
+  if(needAuth&&!token)showLogin();else showForm();
+}
+function closeEd(){ed.style.display="none";ed.innerHTML=""}
+function showLogin(){
+  ed.style.display="block";
+  ed.innerHTML=`<div class="er" style="max-width:380px;margin:10vh auto"><h3>Masuk</h3><label>Password<input id="pw" type="password" autocomplete="current-password"></label><div><button class="btn" id="lg">Masuk</button><button class="btn g" id="cx0">Tutup</button></div><div id="lmsg" style="grid-column:1/-1;color:var(--soon)"></div></div>`;
+  $("cx0").onclick=closeEd;
+  const go=async()=>{
+    const r=await fetch("/api/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({password:$("pw").value})});
+    if(!r.ok){$("lmsg").textContent=(await r.json().catch(()=>({}))).error||"Gagal masuk.";return}
+    token=(await r.json()).token;localStorage.setItem("rooms-token",token);showForm();
+  };
+  $("lg").onclick=go;$("pw").addEventListener("keydown",e=>{if(e.key==="Enter")go()});$("pw").focus();
+}
+function showForm(){
+  editId=null;
+  ed.innerHTML=`<h2>Update Peminjaman Ruangan</h2>
+  <div class="er"><h3 id="bkh">➕ Pinjam / Isi Ruangan</h3>
+  <label>Tanggal<input type="date" id="bkd" value="${ymd(new Date())}"></label>
+  <label>Ruangan<select id="bkr">${D.rooms.map((r,i)=>`<option value="${i}">${esc(r.nama)} — ${esc(r.lantai)}</option>`).join("")}</select></label>
+  <label>Diklat / Acara<input id="f-diklat"></label>
+  <label>Instruktur / PIC<input id="f-instruktur"></label>
+  <label>Materi<input id="f-materi"></label>
+  <label>Mulai<input id="f-mulai" type="time"></label>
+  <label>Selesai<input id="f-selesai" type="time"></label>
+  <div style="grid-column:1/-1"><button class="btn" id="go">Pinjam &amp; Tampilkan</button><button class="btn g" id="cx" style="display:none">Batal edit</button></div></div>
+  <div id="msg"></div>
+  <h3 style="margin:14px 0 8px">Jadwal peminjaman (mulai hari ini)</h3><div id="lst"></div>
+  <label style="margin-top:12px">Teks berjalan (running text)<textarea id="inf" rows="2">${esc(D.ticker)}</textarea></label>
+  <button class="btn" id="svt">Simpan teks berjalan</button><button class="btn g" id="cx1">Tutup</button>`;
+  drawList();
+  $("cx1").onclick=closeEd;
+  $("cx").onclick=resetForm;
+  $("svt").onclick=()=>call("/api/ticker",{ticker:$("inf").value.trim()},"Teks berjalan tersimpan.");
+  $("go").onclick=async()=>{
+    const body={id:editId||undefined,ruang:D.rooms[+$("bkr").value].nama,tanggal:$("bkd").value};
+    FIELDS.forEach(f=>body[f]=$("f-"+f).value.trim());
+    const msg=editId?"Perubahan tersimpan.":"Jadwal tersimpan: "+body.ruang+", "+(body.tanggal?lbl(body.tanggal):"")+".";
+    if(await call("/api/booking",body,msg))resetForm();
+  };
+  $("lst").onclick=e=>{
+    const b=e.target.closest("button");if(!b)return;
+    if(b.dataset.e)return loadEdit(b.dataset.e);
+    if(b.dataset.d){
+      if(b.dataset.sure)return call("/api/booking/delete",{id:b.dataset.d},"Jadwal dihapus.");
+      b.dataset.sure="1";b.textContent="Yakin hapus?";
+      setTimeout(()=>{if(b.isConnected){delete b.dataset.sure;b.textContent="Hapus"}},3000);
+    }
+  };
+}
+function drawList(){
+  const today=ymd(new Date());
+  const L=D.jadwal.filter(x=>x.tanggal>=today).sort((a,b)=>(a.tanggal+(a.mulai||"")).localeCompare(b.tanggal+(b.mulai||"")));
+  $("lst").innerHTML=L.length?L.map(x=>`<div class="row"><div><b>${lbl(x.tanggal)}${x.tanggal===today?" (Hari ini)":""}</b> · ${esc(x.ruang)} · ${x.mulai&&x.selesai?x.mulai+"–"+x.selesai:"Sepanjang hari"}<br><span class="mut">${esc(x.diklat)}${x.instruktur?" · "+esc(x.instruktur):""}</span></div><div><button class="btn g" data-e="${x.id}">Edit</button><button class="btn g" data-d="${x.id}">Hapus</button></div></div>`).join(""):`<div class="mut">Belum ada jadwal.</div>`;
+}
+function resetForm(){
+  editId=null;FIELDS.forEach(f=>$("f-"+f).value="");$("bkd").value=ymd(new Date());
+  $("bkh").textContent="➕ Pinjam / Isi Ruangan";$("go").textContent="Pinjam & Tampilkan";$("cx").style.display="none";
+}
+function loadEdit(id){
+  const x=D.jadwal.find(y=>y.id===id);if(!x)return;
+  editId=id;$("bkd").value=x.tanggal;$("bkr").value=String(D.rooms.findIndex(r=>r.nama===x.ruang));
+  FIELDS.forEach(f=>$("f-"+f).value=x[f]||"");
+  $("bkh").textContent="✏️ Edit Jadwal";$("go").textContent="Simpan Perubahan";$("cx").style.display="inline-block";
+  ed.scrollTo(0,0);
+}
+async function call(path,body,okmsg){
+  const msg=$("msg");if(msg)msg.textContent="Menyimpan...";
+  const r=await api(path,body);
+  const j=await r.json().catch(()=>({}));
+  if(r.ok){D=j;render();if($("lst"))drawList();if($("msg"))$("msg").textContent=okmsg+" Tampilan sudah diperbarui.";return true}
+  if(r.status!==401&&$("msg"))$("msg").textContent=j.error||("Gagal ("+r.status+")");
+  return false;
+}
+gear.onclick=openEd;
+document.addEventListener("keydown",e=>{
+  if(e.key==="Escape"&&ed.style.display==="block")return closeEd();
+  if((e.key==="e"||e.key==="E")&&ed.style.display!=="block"&&!/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName))openEd();
+});
+</script>
+</body>
+</html>
